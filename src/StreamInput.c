@@ -9,8 +9,6 @@
 #include "streaming.h"
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <arpa/inet.h>
 #include <assert.h>
 
 uint8_t isEndOfBuffer(StreamInput* input);
@@ -59,7 +57,7 @@ void StreamInput_free(StreamInput* input) {
 
 uint8_t StreamInput_readByte(StreamInput* input) {
     if (isEndOfBuffer(input)) {
-        return  0;
+        return 0;
     }
     uint8_t byte = input->buffer[input->bufferPos];
     StreamInput_increaseBufferPos(input, sizeof(uint8_t));

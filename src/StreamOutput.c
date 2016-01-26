@@ -9,7 +9,6 @@
 #include "streaming.h"
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <assert.h>
 
 uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput* output, size_t size);
@@ -60,7 +59,7 @@ StreamOutput * StreamOutput_writeInt(StreamOutput* output, int32_t integer) {
     if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
-    *(uint32_t*) (output->buffer + output->bufferPos) = htonl(integer);
+    *(int32_t*) (output->buffer + output->bufferPos) = htonl(integer);
     StreamOutput_increaseBufferPos(output, size);
     return output;
 }
@@ -72,14 +71,14 @@ StreamOutput * StreamOutput_writeVInt(StreamOutput* output, int32_t integer) {
         if (StreamOutput_resizeBufferIfNeeded(output, size)) {
             return NULL;
         }
-        *(uint8_t*) (output->buffer + output->bufferPos) = ((integer & 0x7f) | 0x80);
+        *(int32_t*) (output->buffer + output->bufferPos) = ((integer & 0x7f) | 0x80);
         StreamOutput_increaseBufferPos(output, size);
         integer >>= 7;
     }
     if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
-    *(uint8_t*) (output->buffer + output->bufferPos) = integer;
+    *(int32_t*) (output->buffer + output->bufferPos) = integer;
     StreamOutput_increaseBufferPos(output, size);
 
     return output;
@@ -90,7 +89,7 @@ StreamOutput * StreamOutput_writeLong(StreamOutput* output, int64_t l) {
     if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
-    *(uint64_t*) (output->buffer + output->bufferPos) = htonll(l);
+    *(int64_t*) (output->buffer + output->bufferPos) = htonll(l);
     StreamOutput_increaseBufferPos(output, size);
     return output;
 }
@@ -101,14 +100,14 @@ StreamOutput * StreamOutput_writeVLong(StreamOutput* output, int64_t l) {
         if (StreamOutput_resizeBufferIfNeeded(output, size)) {
             return NULL;
         }
-        *(uint8_t*) (output->buffer + output->bufferPos) = ((l & 0x7f) | 0x80);
+        *(int64_t*) (output->buffer + output->bufferPos) = ((l & 0x7f) | 0x80);
         StreamOutput_increaseBufferPos(output, size);
         l >>= 7;
     }
     if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
-    *(uint8_t*) (output->buffer + output->bufferPos) = l;
+    *(int64_t*) (output->buffer + output->bufferPos) = l;
     StreamOutput_increaseBufferPos(output, size);
 
     return output;
@@ -116,11 +115,16 @@ StreamOutput * StreamOutput_writeVLong(StreamOutput* output, int64_t l) {
 
 uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput* output, size_t size) {
     while (output->bufferPos + size > output->bufferSize) {
-        output->buffer = realloc(output->buffer, output->bufferSize * 2);
+        uint8_t newBufferSize = (output->bufferSize * 2) + 1;
+#ifdef DEBUG
+        fprintf(stderr, "Resizing buffer from %d to %d\n", output->bufferSize, newBufferSize);
+#endif
+        output->buffer = realloc(output->buffer, newBufferSize);
         if (!output->buffer) {
+            fprintf(stderr, "Resizing buffer failed!");
             return 1;
         }
-        output->bufferSize = output->bufferSize * 2;
+        output->bufferSize = newBufferSize;
     }
     return 0;
 }

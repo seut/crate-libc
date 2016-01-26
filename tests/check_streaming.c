@@ -1,20 +1,18 @@
 #include <check.h>
 #include <stdlib.h>
-#include <strings.h>
 #include <limits.h>
 #include "../src/streaming.h"
-
 
 START_TEST(test_stream_byte)
 {
     uint16_t bufferSize = 1;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     uint8_t value = 0xC;
 
     StreamOutput_writeByte(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
     uint8_t valueRead = StreamInput_readByte(in);
 
     if (valueRead != value) {
@@ -27,13 +25,13 @@ END_TEST
 START_TEST(test_stream_int)
 {
     uint16_t bufferSize = 4;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     int32_t value = 12;
 
     StreamOutput_writeInt(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
     int32_t valueRead = StreamInput_readInt(in);
 
     if (valueRead != value) {
@@ -46,13 +44,13 @@ END_TEST
 START_TEST(test_stream_vint)
 {
     uint16_t bufferSize = 5;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     int32_t value = INT_MAX;
 
     StreamOutput_writeVInt(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
     int32_t valueRead = StreamInput_readVInt(in);
 
     if (valueRead != value) {
@@ -65,13 +63,13 @@ END_TEST
 START_TEST(test_stream_long)
 {
     uint16_t bufferSize = 4;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     int64_t value = UINT_MAX * 2;
 
     StreamOutput_writeLong(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
     int64_t valueRead = StreamInput_readLong(in);
 
     if (valueRead != value) {
@@ -84,13 +82,13 @@ END_TEST
 START_TEST(test_stream_vlong)
 {
     uint16_t bufferSize = 9;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     int64_t value = LONG_MAX;
 
     StreamOutput_writeVLong(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
     int64_t valueRead = StreamInput_readVLong(in);
 
     if (valueRead != value) {
@@ -102,11 +100,8 @@ END_TEST
 
 START_TEST(test_stream_payload)
 {
-    fprintf(stderr, "running payload test\n");
     uint16_t bufferSize = 1;
-    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
-    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
     uint8_t value1 = 0xC;
     int32_t value2 = 12;
@@ -115,6 +110,8 @@ START_TEST(test_stream_payload)
     StreamOutput_writeByte(out, value1);
     StreamOutput_writeInt(out, value2);
     StreamOutput_writeVLong(out, value3);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
 
     uint8_t value1Read = StreamInput_readByte(in);
     if (value1Read != value1) {
