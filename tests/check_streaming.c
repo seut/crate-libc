@@ -100,22 +100,59 @@ START_TEST(test_stream_vlong)
 }
 END_TEST
 
+START_TEST(test_stream_payload)
+{
+    fprintf(stderr, "running payload test\n");
+    uint16_t bufferSize = 1;
+    uint8_t buffer[bufferSize];
+    StreamOutput *out = StreamOutput_alloc(bufferSize);
+    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
+
+    uint8_t value1 = 0xC;
+    int32_t value2 = 12;
+    int64_t value3 = LONG_MAX;
+
+    StreamOutput_writeByte(out, value1);
+    StreamOutput_writeInt(out, value2);
+    StreamOutput_writeVLong(out, value3);
+
+    uint8_t value1Read = StreamInput_readByte(in);
+    if (value1Read != value1) {
+        ck_abort_msg("Written and read value1 are not the same, read value: %c, expected: %c", value1Read, value1);
+    }
+    int32_t value2Read = StreamInput_readInt(in);
+    if (value2Read != value2) {
+        ck_abort_msg("Written and read value2 are not the same, read value: %d, expected: %d", value2Read, value2);
+    }
+    int64_t value3Read = StreamInput_readVLong(in);
+    if (value3Read != value3) {
+        ck_abort_msg("Written and read value3 are not the same, read value: %lld, expected: %lld", value3Read, value3);
+    }
+}
+END_TEST
+
 Suite * streaming_suite(void)
 {
     Suite *s;
-    TCase *tc_core;
+    TCase *tc_dataTypes;
+    TCase *tc_payload;
 
     s = suite_create("Streaming");
 
-    /* Core test case */
-    tc_core = tcase_create("Core");
+    /* DataTypes test case */
+    tc_dataTypes = tcase_create("DataTypes");
 
-    tcase_add_test(tc_core, test_stream_byte);
-    tcase_add_test(tc_core, test_stream_int);
-    tcase_add_test(tc_core, test_stream_vint);
-    tcase_add_test(tc_core, test_stream_long);
-    tcase_add_test(tc_core, test_stream_vlong);
-    suite_add_tcase(s, tc_core);
+    tcase_add_test(tc_dataTypes, test_stream_byte);
+    tcase_add_test(tc_dataTypes, test_stream_int);
+    tcase_add_test(tc_dataTypes, test_stream_vint);
+    tcase_add_test(tc_dataTypes, test_stream_long);
+    tcase_add_test(tc_dataTypes, test_stream_vlong);
+    suite_add_tcase(s, tc_dataTypes);
+
+    /* Payload test case */
+    tc_payload = tcase_create("Payload");
+    tcase_add_test(tc_payload, test_stream_payload);
+    suite_add_tcase(s, tc_payload);
 
     return s;
 }
