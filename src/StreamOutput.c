@@ -41,7 +41,7 @@ void StreamOutput_free(StreamOutput* output) {
     free(output);
 }
 
-StreamOutput * StreamOutput_writeByte(StreamOutput* output, char byte) {
+StreamOutput * StreamOutput_writeByte(StreamOutput* output, uint8_t byte) {
     if (resizeBufferIfNeeded(output)) {
         return NULL;
     }
@@ -50,7 +50,7 @@ StreamOutput * StreamOutput_writeByte(StreamOutput* output, char byte) {
     return output;
 }
 
-StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, char boolean) {
+StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, uint8_t boolean) {
     return StreamOutput_writeByte(output, boolean);
 }
 
@@ -81,7 +81,7 @@ StreamOutput * StreamOutput_writeVInt(StreamOutput* output, int32_t integer) {
 
 
 char resizeBufferIfNeeded(StreamOutput* output) {
-    if (output->bufferPos + sizeof(char) > output->bufferSize) {
+    if (output->bufferPos + sizeof(uint8_t) > output->bufferSize) {
         output->buffer = realloc(output->buffer, output->bufferSize * 2);
         if (!output->buffer) {
             return 1;
@@ -92,5 +92,5 @@ char resizeBufferIfNeeded(StreamOutput* output) {
 }
 
 void StreamOutput_increaseBufferPos(StreamOutput* output) {
-    output->bufferPos += sizeof(char);
+    output->bufferPos += sizeof(uint8_t);
 }

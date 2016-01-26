@@ -8,14 +8,14 @@
 START_TEST(test_stream_byte)
 {
     uint16_t bufferSize = 1;
-    char buffer[bufferSize];
+    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
     StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
-    char value = 0xC;
+    uint8_t value = 0xC;
 
     StreamOutput_writeByte(out, value);
-    char valueRead = StreamInput_readByte(in);
+    uint8_t valueRead = StreamInput_readByte(in);
 
     if (valueRead != value) {
         ck_abort_msg("Written and read byte are not the same, read value: %c", valueRead);
@@ -27,7 +27,7 @@ END_TEST
 START_TEST(test_stream_int)
 {
     uint16_t bufferSize = 4;
-    char buffer[bufferSize];
+    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
     StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 
@@ -46,7 +46,7 @@ END_TEST
 START_TEST(test_stream_vint)
 {
     uint16_t bufferSize = 5;
-    char buffer[bufferSize];
+    uint8_t buffer[bufferSize];
     StreamOutput *out = StreamOutput_alloc(bufferSize);
     StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
 

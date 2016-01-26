@@ -27,7 +27,7 @@ void StreamInput_increaseBufferPos(StreamInput* input);
     }\
 }
 
-StreamInput * StreamInput_alloc(char * buffer, uint16_t bufferSize) {
+StreamInput * StreamInput_alloc(uint8_t * buffer, uint16_t bufferSize) {
     StreamInput * streamInput = malloc(sizeof(StreamInput));
     if (!streamInput) {
         return NULL;
@@ -50,7 +50,7 @@ char StreamInput_readByte(StreamInput* input) {
     if (isEndOfBuffer(input)) {
         return  0;
     }
-    char byte = input->buffer[input->bufferPos];
+    uint8_t byte = input->buffer[input->bufferPos];
     StreamInput_increaseBufferPos(input);
     return byte;
 }
@@ -65,13 +65,13 @@ int32_t StreamInput_readInt(StreamInput* input) {
     }
     uint16_t offset = input->bufferPos;
     StreamInput_increaseBufferPos(input);
-    return (int32_t) ntohl( *( (uint32_t*)( (char*)(input->buffer + offset) ) ) );
+    return (int32_t) ntohl( *( (uint32_t*)( (uint8_t*)(input->buffer + offset) ) ) );
 }
 
 int32_t StreamInput_readVInt(StreamInput* input) {
     int32_t output = 0;
 
-    char b;
+    uint8_t b;
     READ_VINT_BYTE(input, b, output, 0);
     READ_VINT_BYTE(input, b, output, 7);
     READ_VINT_BYTE(input, b, output, 14);
@@ -93,5 +93,5 @@ char isEndOfBuffer(StreamInput* input) {
 }
 
 void StreamInput_increaseBufferPos(StreamInput* input) {
-    input->bufferPos += sizeof(char);
+    input->bufferPos += sizeof(uint8_t);
 }

@@ -18,7 +18,7 @@ struct StreamOutput
 {
     uint16_t bufferSize;
     uint16_t bufferPos;
-    char * buffer;
+    uint8_t * buffer;
 };
 typedef struct StreamOutput StreamOutput;
 
@@ -26,9 +26,9 @@ StreamOutput * StreamOutput_alloc(uint16_t bufferSize);
 
 void StreamOutput_free(StreamOutput* output);
 
-StreamOutput * StreamOutput_writeByte(StreamOutput* output, char byte);
+StreamOutput * StreamOutput_writeByte(StreamOutput* output, uint8_t byte);
 
-StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, char boolean);
+StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, uint8_t boolean);
 
 StreamOutput * StreamOutput_writeInt(StreamOutput* output, int32_t integer);
 
@@ -41,11 +41,11 @@ struct StreamInput
 {
     uint16_t bufferSize;
     uint16_t bufferPos;
-    char * buffer;
+    uint8_t * buffer;
 };
 typedef struct StreamInput StreamInput;
 
-StreamInput * StreamInput_alloc(char * buffer, uint16_t bufferSize);
+StreamInput * StreamInput_alloc(uint8_t * buffer, uint16_t bufferSize);
 
 void StreamInput_free(StreamInput* input);
 
