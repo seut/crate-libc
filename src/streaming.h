@@ -14,58 +14,58 @@
 
 // StreamOutput
 
-struct StreamOutput
-{
+struct StreamOutput {
     uint16_t bufferSize;
     uint16_t bufferPos;
-    uint8_t * buffer;
+    uint8_t *buffer;
 };
 typedef struct StreamOutput StreamOutput;
 
-StreamOutput * StreamOutput_alloc(uint16_t bufferSize);
+StreamOutput *StreamOutput_alloc(uint32_t bufferSize);
 
-void StreamOutput_free(StreamOutput* output);
+void StreamOutput_free(StreamOutput *output);
 
-StreamOutput * StreamOutput_writeByte(StreamOutput* output, uint8_t byte);
+StreamOutput *StreamOutput_writeByte(StreamOutput *output, uint8_t byte);
 
-StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, uint8_t boolean);
+StreamOutput *StreamOutput_writeBoolean(StreamOutput *output, uint8_t boolean);
 
-StreamOutput * StreamOutput_writeInt(StreamOutput* output, int32_t integer);
+StreamOutput *StreamOutput_writeString(StreamOutput *output, uint8_t *string, uint32_t size);
 
-StreamOutput * StreamOutput_writeVInt(StreamOutput* output, int32_t integer);
+StreamOutput *StreamOutput_writeInt(StreamOutput *output, int32_t integer);
 
-StreamOutput * StreamOutput_writeLong(StreamOutput* output, int64_t l);
+StreamOutput *StreamOutput_writeVInt(StreamOutput *output, int32_t integer);
 
-StreamOutput * StreamOutput_writeVLong(StreamOutput* output, int64_t l);
+StreamOutput *StreamOutput_writeLong(StreamOutput *output, int64_t l);
+
+StreamOutput *StreamOutput_writeVLong(StreamOutput *output, int64_t l);
 
 
 // StreamInput
 
-struct StreamInput
-{
+struct StreamInput {
     uint16_t bufferSize;
     uint16_t bufferPos;
-    uint8_t * buffer;
+    uint8_t *buffer;
 };
 typedef struct StreamInput StreamInput;
 
-StreamInput * StreamInput_alloc(uint8_t * buffer, uint16_t bufferSize);
+StreamInput *StreamInput_alloc(uint8_t *buffer, uint16_t bufferSize);
 
-void StreamInput_free(StreamInput* input);
+void StreamInput_free(StreamInput *input);
 
-uint8_t StreamInput_readByte(StreamInput* input);
+uint8_t StreamInput_readByte(StreamInput *input);
 
-uint8_t StreamInput_readBoolean(StreamInput* input);
+uint8_t StreamInput_readBoolean(StreamInput *input);
 
-uint8_t * StreamInput_readString(StreamInput* input);
+uint8_t *StreamInput_readString(StreamInput *input);
 
-int32_t StreamInput_readInt(StreamInput* input);
+int32_t StreamInput_readInt(StreamInput *input);
 
-int32_t StreamInput_readVInt(StreamInput* input);
+int32_t StreamInput_readVInt(StreamInput *input);
 
-int64_t StreamInput_readLong(StreamInput* input);
+int64_t StreamInput_readLong(StreamInput *input);
 
-int64_t StreamInput_readVLong(StreamInput* input);
+int64_t StreamInput_readVLong(StreamInput *input);
 
 
 #endif /* streaming_h */
