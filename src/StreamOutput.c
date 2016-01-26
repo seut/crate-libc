@@ -12,8 +12,8 @@
 #include <sys/types.h>
 #include <assert.h>
 
-char resizeBufferIfNeeded(StreamOutput* output);
-void StreamOutput_increaseBufferPos(StreamOutput* output);
+uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput* output, size_t size);
+void StreamOutput_increaseBufferPos(StreamOutput* output, size_t size);
 
 StreamOutput * StreamOutput_alloc(uint16_t bufferSize) {
     StreamOutput * streamOutput = malloc(sizeof(StreamOutput));
@@ -42,11 +42,12 @@ void StreamOutput_free(StreamOutput* output) {
 }
 
 StreamOutput * StreamOutput_writeByte(StreamOutput* output, uint8_t byte) {
-    if (resizeBufferIfNeeded(output)) {
+    size_t size = sizeof(uint8_t);
+    if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
     output->buffer[output->bufferPos] = byte;
-    StreamOutput_increaseBufferPos(output);
+    StreamOutput_increaseBufferPos(output, size);
     return output;
 }
 
@@ -55,33 +56,66 @@ StreamOutput * StreamOutput_writeBoolean(StreamOutput* output, uint8_t boolean) 
 }
 
 StreamOutput * StreamOutput_writeInt(StreamOutput* output, int32_t integer) {
-    if (resizeBufferIfNeeded(output)) {
+    size_t size = sizeof(int32_t);
+    if (StreamOutput_resizeBufferIfNeeded(output, size)) {
         return NULL;
     }
     *(uint32_t*) (output->buffer + output->bufferPos) = htonl(integer);
-    StreamOutput_increaseBufferPos(output);
+    StreamOutput_increaseBufferPos(output, size);
     return output;
 }
 
 StreamOutput * StreamOutput_writeVInt(StreamOutput* output, int32_t integer) {
-    if (resizeBufferIfNeeded(output)) {
-        return NULL;
-    }
+    size_t size = sizeof(uint8_t);
 
     while ((integer & ~0x7F) != 0) {
-        *(int32_t*) (output->buffer + output->bufferPos) = ((integer & 0x7f) | 0x80);
-        StreamOutput_increaseBufferPos(output);
+        if (StreamOutput_resizeBufferIfNeeded(output, size)) {
+            return NULL;
+        }
+        *(uint8_t*) (output->buffer + output->bufferPos) = ((integer & 0x7f) | 0x80);
+        StreamOutput_increaseBufferPos(output, size);
         integer >>= 7;
     }
-    *(int32_t*) (output->buffer + output->bufferPos) = integer;
-    StreamOutput_increaseBufferPos(output);
+    if (StreamOutput_resizeBufferIfNeeded(output, size)) {
+        return NULL;
+    }
+    *(uint8_t*) (output->buffer + output->bufferPos) = integer;
+    StreamOutput_increaseBufferPos(output, size);
 
     return output;
 }
 
+StreamOutput * StreamOutput_writeLong(StreamOutput* output, int64_t l) {
+    size_t size = sizeof(int64_t);
+    if (StreamOutput_resizeBufferIfNeeded(output, size)) {
+        return NULL;
+    }
+    *(uint64_t*) (output->buffer + output->bufferPos) = htonll(l);
+    StreamOutput_increaseBufferPos(output, size);
+    return output;
+}
 
-char resizeBufferIfNeeded(StreamOutput* output) {
-    if (output->bufferPos + sizeof(uint8_t) > output->bufferSize) {
+StreamOutput * StreamOutput_writeVLong(StreamOutput* output, int64_t l) {
+    size_t size = sizeof(uint8_t);
+    while ((l & ~0x7F) != 0) {
+        if (StreamOutput_resizeBufferIfNeeded(output, size)) {
+            return NULL;
+        }
+        *(uint8_t*) (output->buffer + output->bufferPos) = ((l & 0x7f) | 0x80);
+        StreamOutput_increaseBufferPos(output, size);
+        l >>= 7;
+    }
+    if (StreamOutput_resizeBufferIfNeeded(output, size)) {
+        return NULL;
+    }
+    *(uint8_t*) (output->buffer + output->bufferPos) = l;
+    StreamOutput_increaseBufferPos(output, size);
+
+    return output;
+}
+
+uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput* output, size_t size) {
+    while (output->bufferPos + size > output->bufferSize) {
         output->buffer = realloc(output->buffer, output->bufferSize * 2);
         if (!output->buffer) {
             return 1;
@@ -91,6 +125,6 @@ char resizeBufferIfNeeded(StreamOutput* output) {
     return 0;
 }
 
-void StreamOutput_increaseBufferPos(StreamOutput* output) {
-    output->bufferPos += sizeof(uint8_t);
+void StreamOutput_increaseBufferPos(StreamOutput* output, size_t size) {
+    output->bufferPos += size;
 }

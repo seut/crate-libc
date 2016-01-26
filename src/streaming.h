@@ -34,6 +34,10 @@ StreamOutput * StreamOutput_writeInt(StreamOutput* output, int32_t integer);
 
 StreamOutput * StreamOutput_writeVInt(StreamOutput* output, int32_t integer);
 
+StreamOutput * StreamOutput_writeLong(StreamOutput* output, int64_t l);
+
+StreamOutput * StreamOutput_writeVLong(StreamOutput* output, int64_t l);
+
 
 // StreamInput
 
@@ -49,11 +53,11 @@ StreamInput * StreamInput_alloc(uint8_t * buffer, uint16_t bufferSize);
 
 void StreamInput_free(StreamInput* input);
 
-char StreamInput_readByte(StreamInput* input);
+uint8_t StreamInput_readByte(StreamInput* input);
 
-char StreamInput_readBoolean(StreamInput* input);
+uint8_t StreamInput_readBoolean(StreamInput* input);
 
-char * StreamInput_readString(StreamInput* input);
+uint8_t * StreamInput_readString(StreamInput* input);
 
 int32_t StreamInput_readInt(StreamInput* input);
 

@@ -18,7 +18,7 @@ START_TEST(test_stream_byte)
     uint8_t valueRead = StreamInput_readByte(in);
 
     if (valueRead != value) {
-        ck_abort_msg("Written and read byte are not the same, read value: %c", valueRead);
+        ck_abort_msg("Written and read byte are not the same, read value: %c, expected: %c", valueRead, value);
     }
 
 }
@@ -37,7 +37,7 @@ START_TEST(test_stream_int)
     int32_t valueRead = StreamInput_readInt(in);
 
     if (valueRead != value) {
-        ck_abort_msg("Written and read integer are not the same, read value: %d", valueRead);
+        ck_abort_msg("Written and read integer are not the same, read value: %d, expected: %d", valueRead, value);
     }
 
 }
@@ -56,7 +56,45 @@ START_TEST(test_stream_vint)
     int32_t valueRead = StreamInput_readVInt(in);
 
     if (valueRead != value) {
-        ck_abort_msg("Written and read variable integer are not the same, read value: %d", valueRead);
+        ck_abort_msg("Written and read variable integer are not the same, read value: %d, expected: %d", valueRead, value);
+    }
+
+}
+END_TEST
+
+START_TEST(test_stream_long)
+{
+    uint16_t bufferSize = 4;
+    uint8_t buffer[bufferSize];
+    StreamOutput *out = StreamOutput_alloc(bufferSize);
+    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
+
+    int64_t value = UINT_MAX * 2;
+
+    StreamOutput_writeLong(out, value);
+    int64_t valueRead = StreamInput_readLong(in);
+
+    if (valueRead != value) {
+        ck_abort_msg("Written and read long are not the same, read value: %lld, expected %lld", valueRead, value);
+    }
+
+}
+END_TEST
+
+START_TEST(test_stream_vlong)
+{
+    uint16_t bufferSize = 9;
+    uint8_t buffer[bufferSize];
+    StreamOutput *out = StreamOutput_alloc(bufferSize);
+    StreamInput *in = StreamInput_alloc(out->buffer, bufferSize);
+
+    int64_t value = LONG_MAX;
+
+    StreamOutput_writeVLong(out, value);
+    int64_t valueRead = StreamInput_readVLong(in);
+
+    if (valueRead != value) {
+        ck_abort_msg("Written and read variable long are not the same, read value: %lld, expected: %lld", valueRead, value);
     }
 
 }
@@ -75,6 +113,8 @@ Suite * streaming_suite(void)
     tcase_add_test(tc_core, test_stream_byte);
     tcase_add_test(tc_core, test_stream_int);
     tcase_add_test(tc_core, test_stream_vint);
+    tcase_add_test(tc_core, test_stream_long);
+    tcase_add_test(tc_core, test_stream_vlong);
     suite_add_tcase(s, tc_core);
 
     return s;
