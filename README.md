@@ -1,2 +1,2 @@
 # crate-libc
-Crate C library and client
+Crate C client library

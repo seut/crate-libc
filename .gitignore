@@ -27,3 +27,9 @@ test-driver
 *.la
 *.log
 *.trs
+*.a
+**/CMakeFiles
+CMakeCache.txt
+CTestTestfile.cmake
+**/cmake_install.cmake
+Testing

@@ -125,13 +125,15 @@ StreamOutput *StreamOutput_writeString(StreamOutput *output, uint8_t *string, ui
         c = string[i];
         if (c <= 0x007F) {
             StreamOutput_writeByte(output, c);
+        /*
         } else if (c > 0x07FF) {
-            StreamOutput_writeByte(output, (uint8_t) (0xE0 | c >> 12 & 0x0F));
-            StreamOutput_writeByte(output, (uint8_t) (0x80 | c >> 6 & 0x3F));
-            StreamOutput_writeByte(output, (uint8_t) (0x80 | c >> 0 & 0x3F));
+            StreamOutput_writeByte(output, (uint8_t) (0xE0 | (c >> 12 & 0x0F)));
+            StreamOutput_writeByte(output, (uint8_t) (0x80 | (c >> 6 & 0x3F)));
+            StreamOutput_writeByte(output, (uint8_t) (0x80 | (c >> 0 & 0x3F)));
+        */
         } else {
-            StreamOutput_writeByte(output, (uint8_t) (0xC0 | c >> 6 & 0x1F));
-            StreamOutput_writeByte(output, (uint8_t) (0x80 | c >> 0 & 0x3F));
+            StreamOutput_writeByte(output, (uint8_t) (0xC0 | (c >> 6 & 0x1F)));
+            StreamOutput_writeByte(output, (uint8_t) (0x80 | (c >> 0 & 0x3F)));
         }
     }
 
@@ -155,4 +157,25 @@ uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput *output, size_t size) {
 
 void StreamOutput_increaseBufferPos(StreamOutput *output, size_t size) {
     output->bufferPos += size;
+
+    if (output->maxWrittenByte < output->bufferPos) {
+        output->maxWrittenByte = output->bufferPos;
+    }
+}
+
+StreamOutput * StreamOutput_skipBytes(StreamOutput* output, uint32_t skip) {
+    if (StreamOutput_resizeBufferIfNeeded(output, skip)) {
+        return NULL;
+    }
+    StreamOutput_increaseBufferPos(output, skip);
+    return output;    
+}
+
+StreamOutput *StreamOutput_reposition(StreamOutput* output, uint32_t pos) {
+    if (pos > output->bufferSize) {
+        return NULL;
+    }
+
+    output->bufferPos = pos;
+    return output;
 }

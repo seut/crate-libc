@@ -14,12 +14,13 @@
 
 // StreamOutput
 
-struct StreamOutput {
+typedef struct StreamOutput_t
+{
     uint16_t bufferSize;
     uint16_t bufferPos;
-    uint8_t *buffer;
-};
-typedef struct StreamOutput StreamOutput;
+    uint16_t maxWrittenByte;
+    uint8_t * buffer;
+} StreamOutput;
 
 StreamOutput *StreamOutput_alloc(uint32_t bufferSize);
 
@@ -39,15 +40,18 @@ StreamOutput *StreamOutput_writeLong(StreamOutput *output, int64_t l);
 
 StreamOutput *StreamOutput_writeVLong(StreamOutput *output, int64_t l);
 
+StreamOutput *StreamOutput_skipBytes(StreamOutput* output, uint32_t skip);
+
+StreamOutput *StreamOutput_reposition(StreamOutput* output, uint32_t pos);
 
 // StreamInput
 
-struct StreamInput {
+typedef struct StreamInput_t
+{
     uint16_t bufferSize;
     uint16_t bufferPos;
     uint8_t *buffer;
-};
-typedef struct StreamInput StreamInput;
+} StreamInput;
 
 StreamInput *StreamInput_alloc(uint8_t *buffer, uint16_t bufferSize);
 
