@@ -31,3 +31,5 @@ test-driver
 CMakeCache.txt
 CTestTestfile.cmake
 **/cmake_install.cmake
+Testing
+*.orig
