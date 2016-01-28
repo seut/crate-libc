@@ -140,6 +140,26 @@ StreamOutput *StreamOutput_writeString(StreamOutput *output, uint8_t *string, ui
     return output;
 }
 
+StreamOutput *StreamOutput_writeFloat(StreamOutput *output, float f) {
+    floatToIntBitwise convert;
+    convert.f = f;
+    uint32_t i = convert.i;
+    if ( (i & 2139095040) == 2139095040 && (i & 8388607) != 0 ) {
+        i = 0x7fc00000;
+    }
+    return StreamOutput_writeInt(output, i);
+}
+
+
+StreamOutput *StreamOutput_writeDouble(StreamOutput *output, double d) {
+    doubleToLongBitwise convert;
+    convert.d = d;
+    uint64_t l = convert.l;
+    if ( (l & 9218868437227405312) == 9218868437227405312 && (l & 4503599627370495L) != 0 ) {
+        l = 0x7ff8000000000000;
+    }
+    return StreamOutput_writeLong(output, l);
+}
 
 uint8_t StreamOutput_resizeBufferIfNeeded(StreamOutput *output, size_t size) {
     while (output->bufferPos + size > output->bufferSize) {

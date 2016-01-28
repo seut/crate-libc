@@ -1,7 +1,8 @@
 #include <check.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "../src/streaming.h"
+#include <float.h>
+#include "../src/crate.h"
 
 START_TEST(test_stream_byte)
 {
@@ -130,6 +131,48 @@ START_TEST(test_stream_string)
 }
 END_TEST
 
+START_TEST(test_stream_float)
+{
+    uint16_t bufferSize = 8;
+    StreamOutput *out = StreamOutput_alloc(bufferSize);
+
+    float value = 45.6789;
+
+    StreamOutput_writeFloat(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
+    float valueRead = StreamInput_readFloat(in);
+
+    if (valueRead != value) {
+        ck_abort_msg("Written and read floats are not equal, read value: %f, expected: %f", valueRead, value);
+    }
+
+    StreamOutput_free(out);
+    StreamInput_free(in);
+}
+END_TEST
+
+START_TEST(test_stream_double)
+{
+    uint16_t bufferSize = 8;
+    StreamOutput *out = StreamOutput_alloc(bufferSize);
+
+    double value = DBL_MAX;
+
+    StreamOutput_writeDouble(out, value);
+
+    StreamInput *in = StreamInput_alloc(out->buffer, out->bufferSize);
+    double valueRead = StreamInput_readDouble(in);
+
+    if (valueRead != value) {
+        ck_abort_msg("Written and read doubles are not equal, read value: %f, expected: %f", valueRead, value);
+    }
+
+    StreamOutput_free(out);
+    StreamInput_free(in);
+}
+END_TEST
+
 START_TEST(test_stream_payload)
 {
     uint16_t bufferSize = 1;
@@ -180,6 +223,8 @@ Suite * streaming_suite(void)
     tcase_add_test(tc_dataTypes, test_stream_long);
     tcase_add_test(tc_dataTypes, test_stream_vlong);
     tcase_add_test(tc_dataTypes, test_stream_string);
+    tcase_add_test(tc_dataTypes, test_stream_float);
+    tcase_add_test(tc_dataTypes, test_stream_double);
     suite_add_tcase(s, tc_dataTypes);
 
     /* Payload test case */

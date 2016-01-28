@@ -12,6 +12,16 @@
 #include <stdio.h>
 #include <stdint.h>
 
+typedef union {
+    uint32_t i;
+    float f;
+} floatToIntBitwise;
+
+typedef union {
+    uint64_t l;
+    double d;
+} doubleToLongBitwise;
+
 // StreamOutput
 
 typedef struct StreamOutput_t
@@ -39,6 +49,10 @@ StreamOutput *StreamOutput_writeVInt(StreamOutput *output, int32_t integer);
 StreamOutput *StreamOutput_writeLong(StreamOutput *output, int64_t l);
 
 StreamOutput *StreamOutput_writeVLong(StreamOutput *output, int64_t l);
+
+StreamOutput *StreamOutput_writeFloat(StreamOutput *output, float f);
+
+StreamOutput *StreamOutput_writeDouble(StreamOutput *output, double d);
 
 StreamOutput *StreamOutput_skipBytes(StreamOutput* output, uint32_t skip);
 
@@ -71,5 +85,8 @@ int64_t StreamInput_readLong(StreamInput *input);
 
 int64_t StreamInput_readVLong(StreamInput *input);
 
+float StreamInput_readFloat(StreamInput *input);
+
+double StreamInput_readDouble(StreamInput *input);
 
 #endif /* streaming_h */

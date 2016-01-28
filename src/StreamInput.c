@@ -173,6 +173,19 @@ uint8_t *StreamInput_readString(StreamInput *input) {
     return buffer;
 }
 
+float StreamInput_readFloat(StreamInput *input) {
+    floatToIntBitwise convert;
+    convert.i = StreamInput_readInt(input);
+    return convert.f;
+}
+
+double StreamInput_readDouble(StreamInput *input) {
+    doubleToLongBitwise convert;
+    convert.l = StreamInput_readLong(input);
+    return convert.d;
+}
+
+
 uint8_t isEndOfBuffer(StreamInput *input) {
     if (input->bufferPos > input->bufferSize) {
         return 1;

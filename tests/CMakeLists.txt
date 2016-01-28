@@ -11,5 +11,5 @@ file(GLOB TEST_SOURCES "*.c")
 
 link_directories ("${CHECK_LIB_DIR}")
 
-add_executable(check_streaming ${TEST_SOURCES})
+add_executable(check_streaming ${TEST_SOURCES} ../src/crate.h)
 target_link_libraries(check_streaming ${LIBS})
